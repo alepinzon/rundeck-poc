@@ -5,15 +5,29 @@ services:
         image: rundeck/rundeck:3.3.1
         links:
           - mysql
+        volumes: 
+          - ./rundeck/rundeck-config.properties:/etc/remco/templates/rundeck-config.properties
         environment:
+            RUNDECK_SERVER_UUID: 755d279b-1b78-44e5-88db-76d365b6c778
             RUNDECK_GRAILS_URL: http://localhost
             RUNDECK_SERVER_FORWARDED: 'true'
             RUNDECK_DATABASE_DRIVER: com.mysql.cj.jdbc.Driver
             RUNDECK_DATABASE_USERNAME: rundeck
             RUNDECK_DATABASE_PASSWORD: rundeck
             RUNDECK_DATABASE_URL: jdbc:mysql://mysql/rundeck?autoReconnect=true&useSSL=false
-        expose:
-          - "4440"
+        ports:
+          - 4441:4440
+    mysql:
+        image: mysql:5.7
+        environment:
+          - MYSQL_ROOT_PASSWORD=root
+          - MYSQL_DATABASE=rundeck
+          - MYSQL_USER=rundeck
+          - MYSQL_PASSWORD=rundeck
+        expose: 
+          - "3306"
+        ports:
+          - 3306:3306
     nginx:
       image: nginx
       links:
@@ -22,12 +36,3 @@ services:
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       ports:
         - 80:80
-    mysql:
-        image: mysql:5.7
-        environment:
-          - MYSQL_ROOT_PASSWORD=root
-          - MYSQL_DATABASE=rundeck
-          - MYSQL_USER=rundeck
-          - MYSQL_PASSWORD=rundeck
-        ports:
-          - 3306:3306
