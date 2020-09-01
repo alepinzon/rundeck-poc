@@ -2,19 +2,25 @@ version: '3'
 
 services:
     rundeck:
-        image: alepinzon/rundeck-poc
+        image: <your-rundeck-image>
         links:
           - mysql
         volumes: 
           - ./rundeck/rundeck-config.properties:/etc/remco/templates/rundeck-config.properties
         environment:
-            RUNDECK_SERVER_UUID: 755d279b-1b78-44e5-88db-76d365b6c778
+            RUNDECK_SERVER_UUID: <server-uuid>
             RUNDECK_GRAILS_URL: http://localhost
             RUNDECK_SERVER_FORWARDED: 'true'
             RUNDECK_DATABASE_DRIVER: com.mysql.cj.jdbc.Driver
             RUNDECK_DATABASE_USERNAME: rundeck
             RUNDECK_DATABASE_PASSWORD: rundeck
             RUNDECK_DATABASE_URL: jdbc:mysql://mysql/rundeck?autoReconnect=true&useSSL=false
+            RUNDECK_PLUGIN_EXECUTIONFILESTORAGE_NAME: org.rundeck.amazon-s3
+            RUNDECK_PLUGIN_EXECUTIONFILESTORAGE_S3_BUCKET: <s3-bucket-name>
+            RUNDECK_PLUGIN_EXECUTIONFILESTORAGE_S3_REGION: <aws-region>
+            AWS_ACCESS_KEY_ID: <aws-key-id>
+            AWS_SECRET_KEY: <aws-secret-key>
+          
         ports:
           - 4441:4440
     mysql:
