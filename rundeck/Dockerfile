@@ -1,3 +1,6 @@
-FROM rundeck/rundeck:3.3.1
+FROM rundeck/rundeck:3.3.2
 
 COPY --chown=rundeck:root ./libext ./libext
+
+USER root
+RUN apt update && apt install -y awscli
