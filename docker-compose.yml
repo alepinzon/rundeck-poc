@@ -2,15 +2,13 @@ version: '3'
 
 services:
     rundeck:
-        image: <rundeck-builded-image>
+        image: <rundeck-image>
         links:
           - mysql
-        volumes: 
-          - ./rundeck/rundeck-config.properties:/etc/remco/templates/rundeck-config.properties
         environment:
-            RUNDECK_SERVER_UUID: 755d279b-1b78-44e5-88db-76d365b6c778
-            RUNDECK_PRIMARYSERVERID: 755d279b-1b78-44e5-88db-76d365b6c778
-            RUNDECK_GRAILS_URL: http://localhost
+            RUNDECK_SERVER_UUID: <uuid>
+            RUNDECK_PRIMARYSERVERID: <uuid>
+            RUNDECK_GRAILS_URL: http://<your-host>
             RUNDECK_SERVER_FORWARDED: 'true'
             RUNDECK_DATABASE_DRIVER: com.mysql.cj.jdbc.Driver
             RUNDECK_DATABASE_USERNAME: rundeck
@@ -46,10 +44,26 @@ services:
         ports:
           - 3306:3306
     apache:
-        image: <apache-builded-image>
+        image: <apache-oidc-image>
         links:
           - rundeck
-        volumes: 
-          - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+        environment:
+          - OIDC_PROVIDER_ISSUER=https://<auth0-domain>
+          - OIDC_PROVIDER_AUTHORIZATION_ENDPOINT=https://<auth0-domain>/authorize
+          - OIDC_PROVIDER_TOKEN_ENDPOINT=https://<auth0-domain>/oauth/token
+          - OIDC_PROVIDER_TOKEN_ENDPOINT_AUTH=client_secret_post
+          - OIDC_PROVIDER_USER_INFO_ENDPOINT=https://<auth0-domain>/userinfo
+          - OIDC_PROVIDER_JWKS_URI=https://<auth0-domain>/.well-known/jwks.json
+          - OIDC_CLIENT_ID=<auth0-client-id>
+          - OIDC_CLIENT_SECRET=<auth0-client-secret>
+          - OIDC_SCOPES="openid email profile"
+          - OIDC_REDIRECT_URI=http://<you-host>/auth
+          - OIDC_CRYPTO_PASSPHRASE=<passphrase>
+          - OIDC_COOKIE_PATH=/
+          - OIDC_PASS_CLAIMS_AS=environment
+          - OIDC_PASS_USER_INFO_AS=claims
+          - OIDC_LOGOUT_URL=https://<auth0-domain>/v2/logout?returnTo=http%3A%2F%2F<your-domain>%2Fauth%3Flogout%3Dhttp%253A%252F%252F<your-domain>&client_id=<auth0-client-id>
+          - PROXY_PASS=http://rundeck:4440/
+          - PROXY_PASS_REVERSE=http://rundeck:4440/ 
         ports:
           - 80:80
