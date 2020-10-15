@@ -5,8 +5,6 @@ services:
         image: <rundeck-builded-image>
         links:
           - mysql
-        volumes: 
-          - ./rundeck/rundeck-config.properties:/etc/remco/templates/rundeck-config.properties
         environment:
             RUNDECK_SERVER_UUID: 755d279b-1b78-44e5-88db-76d365b6c778
             RUNDECK_PRIMARYSERVERID: 755d279b-1b78-44e5-88db-76d365b6c778
